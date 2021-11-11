@@ -1,0 +1,16 @@
+FROM daisukekobayashi/darknet:darknet_yolo_v3_optimal-cpu
+#MAINTAINER <your name> "<your email>"
+ENV PYTHONUNBUFFERED 1
+
+RUN apt-get update -y && apt-get install -y python3-pip python3-dev wget libsm6 libxext6 libxrender-dev zip unzip
+RUN wget -O darknet53.conv.74 https://vottstoragename.blob.core.windows.net/public-junk/darknet53.conv.74
+
+ADD run_darknet.sh .
+ADD prepare_for_darknet_pub.pyc .
+ADD yolov3-tiny.cfg .
+RUN chmod 777 run_darknet.sh
+
+ENV MAX_BATCHES 1000
+
+ENTRYPOINT ["/bin/bash"]
+CMD ["run_darknet.sh"]
