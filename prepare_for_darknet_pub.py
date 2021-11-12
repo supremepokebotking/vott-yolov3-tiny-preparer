@@ -2,7 +2,7 @@ import glob, os
 import random
 import json
 
-EXPORT_PATH = os.environ.get("EXPORT_PATH", "./workspace/vott-csv-export")
+EXPORT_PATH = os.environ.get("EXPORT_PATH", "./vott-csv-export")
 USE_GUARANTEED_IMAGES = bool(int(os.environ.get('USE_GUARANTEED_IMAGES', 1)))
 SHOW_DEBUG_TEXT = bool(int(os.environ.get('SHOW_DEBUG_TEXT', 0)))
 
