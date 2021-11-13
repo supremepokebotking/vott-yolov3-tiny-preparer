@@ -1,6 +1,7 @@
 import glob, os
 import random
 import json
+from PIL import Image
 
 EXPORT_PATH = os.environ.get("EXPORT_PATH", "./vott-csv-export")
 USE_GUARANTEED_IMAGES = bool(int(os.environ.get('USE_GUARANTEED_IMAGES', 1)))
@@ -30,35 +31,52 @@ if len(all_guaranteed_training_files) > 0:
 guaranteed_testing_file_names = []
 guaranteed_training_file_names = []
 
-#with open('PokeTest1-export.csv') as csv_file:
-with open(export_csv) as csv_file:
-    csv_reader = csv.reader(csv_file, delimiter=',')
-    line_count = 0
-    for row in csv_reader:
-        if line_count == 0:
-            line_count += 1
-            continue
-        vott_data.append(row)
 
-if guaranteed_testing_file is not None:
-    with open(guaranteed_testing_file) as csv_file:
+for export_csv in all_csvs:
+    print('inspecting csv:', export_csv)
+    #with open('PokeTest1-export.csv') as csv_file:
+    with open(export_csv) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
         for row in csv_reader:
             if line_count == 0:
                 line_count += 1
                 continue
-            guaranteed_testing_file_names.append(row[0])
 
-if guaranteed_training_file is not None:
-    with open(guaranteed_training_file) as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=',')
-        line_count = 0
-        for row in csv_reader:
-            if line_count == 0:
-                line_count += 1
-                continue
-            guaranteed_training_file_names.append(row[0])
+            if len(row) < 7:
+                # if image dimensions dont exist, manually add them
+                image = Image.open("%s/%s" % (EXPORT_PATH, row[0]))
+
+                width, height = image.size
+
+                row.append(width)
+                row.append(height)
+
+            vott_data.append(row)
+
+if all_guaranteed_testing_files is not None:
+    for guaranteed_testing_file in all_guaranteed_testing_files:
+        print('inspecting testing csv:', guaranteed_testing_file)
+        with open(guaranteed_testing_file) as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            line_count = 0
+            for row in csv_reader:
+                if line_count == 0:
+                    line_count += 1
+                    continue
+                guaranteed_testing_file_names.append(row[0])
+
+if all_guaranteed_training_files is not None:
+    for guaranteed_training_file in all_guaranteed_training_files:
+        print('inspecting training csv:', guaranteed_training_file)
+        with open(guaranteed_training_file) as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            line_count = 0
+            for row in csv_reader:
+                if line_count == 0:
+                    line_count += 1
+                    continue
+                guaranteed_training_file_names.append(row[0])
 
 print("guaranteed_testing_file_names", guaranteed_testing_file_names)
 print("guaranteed_training_file_names", guaranteed_training_file_names)
@@ -163,7 +181,7 @@ for name in full_codenames_2:
 
 NUM_CLASSES = len(full_codenames)
 FILTERS = 3*(NUM_CLASSES+5)
-MAX_BATCHES = int(os.environ.get("MAX_BATCHES", "100200"))
+MAX_BATCHES = int(os.environ.get("MAX_BATCHES", "5000"))
 
 obj_save_path = "%s/%s" % (EXPORT_PATH, "obj.names")
 with open(obj_save_path, "w") as obj_file:
