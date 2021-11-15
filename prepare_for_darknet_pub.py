@@ -247,7 +247,7 @@ for pathAndFilename in all_files:
         title_and_ext = '%s%s' % (title, ext)
         title_and_ext = title_and_ext.strip()
 #        print('aaa:',title_and_ext)
-        if title_and_ext in guaranteed_testing_file_names:
+        if title_and_ext in guaranteed_testing_file_names or 'testing_' in title_and_ext:
             counter = 1
             file_test.write(title + ext + "\n")
             test_images += 1
@@ -255,8 +255,8 @@ for pathAndFilename in all_files:
             print('used test image')
             continue
 
-        if title_and_ext in guaranteed_training_file_names:
-            file_test.write(title + ext + "\n")
+        if title_and_ext in guaranteed_training_file_names or 'training_' in title_and_ext:
+            file_train.write(title + ext + "\n")
             train_images += 1
             print('used training image')
             continue
